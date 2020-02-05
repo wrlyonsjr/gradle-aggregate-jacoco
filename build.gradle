@@ -1,0 +1,101 @@
+buildscript {
+	repositories {
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'com.palantir:gradle-flexversion:0.7.0'
+	}
+}
+
+plugins {
+	id 'com.jfrog.bintray' version '1.6'
+	id 'com.gradle.plugin-publish' version '0.9.1'
+}
+
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+repositories {
+	jcenter()
+}
+
+apply plugin: 'gradle-flexversion'
+flexversion.useTags = true
+group 'org.wrlyonsjr'
+version flexVersion()
+
+dependencies {
+	compile gradleApi()
+	compile localGroovy()
+	compile 'com.google.guava:guava:18.0'
+
+	testCompile 'org.hamcrest:hamcrest-all:1.3'
+	testCompile 'com.netflix.nebula:nebula-test:4.0.0'
+}
+
+task sourceJar(type: Jar) {
+	from sourceSets.main.allSource
+	classifier 'sources'
+}
+
+publishing {
+	publications {
+		PluginPublication(MavenPublication) {
+			from components.java
+
+			artifact(sourceJar) {
+				classifier 'sources'
+			}
+		}
+	}
+}
+
+/*
+bintray {
+	user = System.getenv('BINTRAY_USER')
+	key = System.getenv('BINTRAY_KEY')
+	publish = true
+	pkg {
+		repo = 'releases'
+		name = 'gradle-aggregate-jacoco'
+		userOrg = 'wrlyonsjr'
+		licenses = ['Apache-2.0']
+		publications = ['PluginPublication']
+	}
+}
+
+bintrayUpload.onlyIf {
+	project.version.isTag == true
+}
+
+
+bintrayUpload.dependsOn { generatePomFileForPluginPublicationPublication }
+bintrayUpload.dependsOn { sourceJar }
+bintrayUpload.dependsOn { build }
+*/
+
+pluginBundle {
+	website = 'https://github.com/wrlyonsjr/gradle-aggregate-jacoco'
+	vcsUrl = 'https://github.com/wrlyonsjr/gradle-aggregate-jacoco'
+	tags = ['java', 'code quality', 'jacoco', 'code coverage', 'coverage']
+
+	plugins {
+		jacocoCoveragePlugin {
+			id = 'org.wrlyonsjr.jacoco-coverage'
+			displayName = 'Jacoco Coverage Plugin'
+			description = 'The org.wrlyonsjr.jacoco-coverage plugin allows Gradle build scripts to configure minimum Java Code Coverage thresholds for projects, packages, classes, and files.'
+		}
+		jacocoFullReportPlugin {
+			id = 'org.wrlyonsjr.jacoco-full-report'
+			displayName = 'Jacoco Full Report Plugin'
+			description = 'The org.wrlyonsjr.jacoco-full-report plugin adds a task that produces a Jacoco report for the combined code coverage of the tests of all subprojects of the current project.'
+		}
+	}
+}
+
+publishPlugins.onlyIf {
+	project.version.isTag == true
+}
