@@ -61,23 +61,31 @@ public class JacocoFullReportPlugin implements Plugin<Project> {
 				executionData.files.any { it.exists() }
 			}
 			doFirst {
-				executionData = project.files(executionData.findAll { it.exists() }.flatten())
+				executionData.from(
+					project.files(executionData.findAll { it.exists() }.flatten())
+				)
 				project.logger.info("Setting up jacocoFullReport for: " + getReportTasks(project, fullReportTask))
 			}
 
 			// Filter for nulls since some JacocoReport tasks may have no classDirectories or sourceDirectories
 			// configured, for example if there are no tests for a subproject.
-			executionData project.files({ getReportTasks(project, fullReportTask).executionData })
-			classDirectories = project.files({
-				getReportTasks(project, fullReportTask).collect { it.classDirectories }.findAll {
-					it != null
-				}
-			})
-			sourceDirectories = project.files({
-				getReportTasks(project, fullReportTask).collect { it.sourceDirectories }.findAll {
-					it != null
-				}
-			})
+			executionData.from(
+ 				project.files({ getReportTasks(project, fullReportTask).executionData })
+ 			)
+			classDirectories.from(
+				project.files({
+					getReportTasks(project, fullReportTask).collect { it.classDirectories }.findAll {
+						it != null
+					}
+				})
+			)
+			sourceDirectories.from(
+				project.files({
+					getReportTasks(project, fullReportTask).collect { it.sourceDirectories }.findAll {
+						it != null
+					}
+				})
+			)
 		}
 	}
 }
