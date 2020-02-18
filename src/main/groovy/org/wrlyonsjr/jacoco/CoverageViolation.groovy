@@ -39,6 +39,14 @@ public class CoverageViolation {
 
 	@Override
 	public String toString() {
-		return String.format("%s (%d/%d %s coverage < %g)", clazz, covered, total, type, threshold)
+		double coverage = covered/(double)total
+		return String.format("%s (%d/%d or %s %s coverage < %s)",
+			clazz, covered, total, toPercentage(coverage), type,
+			toPercentage(threshold))
+	}
+
+	private static String toPercentage(double input) {
+		double percent = input * 100
+		return "${percent}%"
 	}
 }
