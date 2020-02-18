@@ -39,7 +39,6 @@ public class JacocoCoveragePlugin implements Plugin<Project> {
 		project.afterEvaluate({ p ->
 			TaskContainer tasks = p.getTasks()
 			JacocoCoverageTask checkCoverage = tasks.create("checkCoverage", JacocoCoverageTask.class)
-			tasks.findByName("check").dependsOn(checkCoverage)
 			tasks.withType(JacocoReport.class, { report ->
 				checkCoverage.dependsOn(report)
 				JacocoReportsContainer reportsContainer = report.getReports()

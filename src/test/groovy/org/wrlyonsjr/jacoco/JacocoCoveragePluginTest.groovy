@@ -42,34 +42,6 @@ class JacocoCoveragePluginTest extends IntegrationSpec {
 		fork = true // Run test in separate JVM in order to isolate classloaders. Sadly, this makes debugging hard.
 	}
 
-	def 'check task depends on checkCoverage task'() {
-		when:
-		writeHelloWorld('nebula.hello')
-		writeUnitTest(false)
-		buildFile << standardBuildFile
-
-		then:
-		ExecutionResult result = runTasksSuccessfully('check')
-		result.wasExecuted(':checkCoverage')
-		result.wasExecuted(':check')
-	}
-
-	def 'check fails when coverage is required'() {
-		when:
-		writeHelloWorld('nebula.hello')
-		writeUnitTest(false)
-		buildFile << standardBuildFile
-		buildFile << '''
-			jacocoCoverage {
-				fileThreshold 1.0
-			}
-		'''.stripIndent()
-
-		then:
-		def result = runTasksWithFailure('test', 'checkCoverage')
-		assert result.standardOutput.contains("Found the following Jacoco coverage violations")
-	}
-
 	def 'checkCoverage succeeds when no coverage is required'() {
 		when:
 		writeHelloWorld('nebula.hello')
