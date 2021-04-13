@@ -60,12 +60,6 @@ public class JacocoFullReportPlugin implements Plugin<Project> {
 			setOnlyIf {
 				executionData.files.any { it.exists() }
 			}
-			doFirst {
-				executionData.from(
-					project.files(executionData.findAll { it.exists() }.flatten())
-				)
-				project.logger.info("Setting up jacocoFullReport for: " + getReportTasks(project, fullReportTask))
-			}
 
 			// Filter for nulls since some JacocoReport tasks may have no classDirectories or sourceDirectories
 			// configured, for example if there are no tests for a subproject.
